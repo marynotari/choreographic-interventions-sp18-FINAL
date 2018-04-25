@@ -1,48 +1,41 @@
 // Set to true if using live kinectron data
-var liveData = false;
+let liveData = false;
 
 // p5 canvas
-var myCanvas = null;
+let myCanvas = null;
 
 // Declare kinectron
-var kinectron = null;
+let kinectron = null;
 
-// drawHand variables
-var start = 30;
-var target = 100;
-var diameter = start;
-var light = 255;
-var dark = 100;
-var hueValue = light;
-var lerpAmt = 0.3;
-var state = 'ascending';
-// var hands = [];
-
-// recorded data variables
-var sentTime = Date.now();
-var currentFrame = 0;
+// Recorded data variables
+let sentTime = Date.now();
+let currentFrame = 0;
+let loopTime = 100; //bigger number = slower playback
 
 
 function setup() {
-  //console.log('hello');
+
   myCanvas = createCanvas(windowWidth, windowHeight);
   background(0);
   noStroke();
 
-  if (liveData) initKilnectron();
+  // if (liveData) initKinectron();
+
 }
 
 
 function draw() {
-
   if (!liveData) loopRecordedData();
 }
 
+function drawBrandon(){
+  brandon = new Brandon(joint);
+  brandon.show();
+}
 
 function loopRecordedData() {
 
-  // send data every 20 seconds
-  if (Date.now() > sentTime + 100) {
+  if (Date.now() > sentTime + loopTime) {
     bodyTracked(skeletonData[currentFrame]);
     sentTime = Date.now();
 
@@ -75,105 +68,127 @@ function loopRecordedData() {
 function bodyTracked(body) {
   background(0, 20);
 
-  var hands = [];
-
-  // console.log(body);
+  let hands = [];
 
   for (var i = 0; i < body.bodies.length; i++ ) {
-    //console.log('got body');
     if (body.bodies[i].tracked) {
-      //console.log('tracked');
 
-      //console.log(body.bodies[i]);
-      //debugger;
-
-      var trackedBody = body.bodies[i];
+      let trackedBody = body.bodies[i];
 
       // Get all the joints off the tracked body and do something with them
       for(var jointType in trackedBody.joints) {
         joint = trackedBody.joints[jointType];
-        // console.log(joints);
-        //debugger;
 
-      //  drawJoint(joint);
-      drawNew(joint);
+      drawBrandon();
 
-        // Get the hands off the tracked body and do somethign with them
+      // drawJoint(joint);
+      // drawNew(joint);
 
-        // Find right hand
-        // if (jointType == 11) {
-        //   hands.rightHand = joint;
-        //   hands.rightHandState = translateHandState(body.rightHandState);
-        // }
+      // Get the hands off the tracked body and do something with them
 
-        // // Find left hand
-        // if (jointType == 7) {
-        //   hands.leftHand = joint;
-        //   hands.leftHandState = translateHandState(body.leftHandState);
-        // }
+      // Find right hand
+      // if (jointType == 11) {
+      //   hands.rightHand = joint;
+      //   hands.rightHandState = translateHandState(body.rightHandState);
+      // }
+
+      // // Find left hand
+      // if (jointType == 7) {
+      //   hands.leftHand = joint;
+      //   hands.leftHandState = translateHandState(body.leftHandState);
+      // }
 
       }
-
-
-
-
-
-
     }
+  }
+  //drawHands(hands);
+}
 
+//create a class for the various states that Brandon's kinectron data is drawn
+class Brandon {
+  constructor(joint) {
+    //random() variables
+    this.scale1 = random(-20, 20);
+    this.scale2 = random(-50, 50);
+
+    //rect() variables
+    this.rectX = joint.depthX * myCanvas.width + random(-50,50);
+    this.rectY = joint.depthY * myCanvas.height + random(-50,50);
+    this.rectWidth1 = this.scale1;
+    this.rectHeight1 = this.scale1;
+    this.rectWidth2 = this.scale2;
+    this.rectHeight2 = this.scale1;
+  }
+
+  show(joint) {
+    rectMode(CENTER);
+    fill(100,100,100,60);
+    rect(this.rectX, this.rectY, this.rectWidth1, this.rectHeight1);
+    rect(this.rectX, this.rectY, this.rectWidth2, this.rectHeight2);
+  }
+
+  update() {
 
   }
 
-
-
-
-
-  //drawHands(hands);
-
 }
 
-function drawNew(joint) {
-  rectMode(CENTER);
-  fill(100,100,100,40);
-  rect(joint.depthX * myCanvas.width+ random(-10,10), joint.depthY * myCanvas.height + random(-10,10), random(-10, 10),random(-10, 10));
-  rect(joint.depthX * myCanvas.width+random(-50,50), joint.depthY * myCanvas.height+random(-50,50), random(-10, 10),random(-10, 10));
-  rect(joint.depthX * myCanvas.width+random(-100,100), joint.depthY * myCanvas.height+random(-100,100), random(-10, 10),random(-10, 10));
-  rect(joint.depthX * myCanvas.width+random(-20,20), joint.depthY * myCanvas.height+random(-20,20), random(-10, 10),random(-10, 10));
-}
 
-// Draw skeleton
-function drawJoint(joint) {
-  fill(100);
+//// DIANA'S CODE
+// function drawNew(joint) {
+//   rectMode(CENTER);
+//   fill(100,100,100,60);
+//   rect(joint.depthX * myCanvas.width + random(-50,50), joint.depthY * myCanvas.height + random(-50,50), random(-20, 20),random(-20, 20));
+//   rect(joint.depthX * myCanvas.width+random(-50,50), joint.depthY * myCanvas.height+random(-50,50), random(-20, 20),random(-20, 20));
+//   rect(joint.depthX * myCanvas.width+random(-50,50), joint.depthY * myCanvas.height+random(-50,50), random(-50, 50),random(-50, 50));
+//   rect(joint.depthX * myCanvas.width+random(-50,50), joint.depthY * myCanvas.height+random(-50,50), random(-20, 20),random(-20, 20));
+// }
 
-  // Kinect location data needs to be normalized to canvas size
-  ellipse(joint.depthX * myCanvas.width, joint.depthY * myCanvas.height, 15, 15);
+
+//// LISA'S ORIGINAL CODE
+// // Draw skeleton
+// function drawJoint(joint) {
+//   fill(100);
+
+  // // Kinect location data needs to be normalized to canvas size
+  // ellipse(joint.depthX * myCanvas.width, joint.depthY * myCanvas.height, 15, 15);
 
   // fill(200);
 
   // // Kinect location data needs to be normalized to canvas size
   // ellipse(joint.depthX * myCanvas.width, joint.depthY * myCanvas.height, 3, 3);
-}
+// }
 
-// Make handstate more readable
-function translateHandState(handState) {
-  switch (handState) {
-    case 0:
-      return 'unknown';
 
-    case 1:
-      return 'notTracked';
+// // Make handstate more readable
+// function translateHandState(handState) {
+//   switch (handState) {
+//     case 0:
+//       return 'unknown';
+//
+//     case 1:
+//       return 'notTracked';
+//
+//     case 2:
+//       return 'open';
+//
+//     case 3:
+//       return 'closed';
+//
+//     case 4:
+//       return 'lasso';
+//   }
+// }
 
-    case 2:
-      return 'open';
-
-    case 3:
-      return 'closed';
-
-    case 4:
-      return 'lasso';
-  }
-}
-
+// // drawHand variables
+// let start = 30;
+// let target = 100;
+// let diameter = start;
+// let light = 255;
+// let dark = 100;
+// let hueValue = light;
+// let lerpAmt = 0.3;
+// let state = 'ascending';
 
 // // Draw hands
 // function drawHands(hands) {
