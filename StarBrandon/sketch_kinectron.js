@@ -28,8 +28,8 @@ function draw() {
   if (!liveData) loopRecordedData();
 }
 
-function drawBrandon(){
-  brandon = new Brandon(joint);
+function drawBrandon(objectX,objectY){
+  brandon = new Brandon(objectX,objectY);
   brandon.show();
 }
 
@@ -69,7 +69,8 @@ function bodyTracked(body) {
   background(0, 20);
 
   let hands = [];
-
+  let objectX;
+  let objectY;
   for (var i = 0; i < body.bodies.length; i++ ) {
     if (body.bodies[i].tracked) {
 
@@ -78,8 +79,19 @@ function bodyTracked(body) {
       // Get all the joints off the tracked body and do something with them
       for(var jointType in trackedBody.joints) {
         joint = trackedBody.joints[jointType];
-
-      drawBrandon();
+        objectX = joint.depthX;
+        objectY = joint.depthY;
+        if (jointType == 8||jointType == 9||jointType == 10||jointType == 11){
+          objectX *= 1.5;
+          // objectY *= 2;
+        }
+        if (jointType == 4||jointType == 5||jointType == 6||jointType ==7 ){
+          objectX *= 0.5;
+          // objectY *= 0.5;
+        }
+          
+        // translate(-windowWidth/3, -windowHeight/3);
+      drawBrandon(objectX,objectY);
 
       // drawJoint(joint);
       // drawNew(joint);
@@ -106,21 +118,22 @@ function bodyTracked(body) {
 
 //create a class for the various states that Brandon's kinectron data is drawn
 class Brandon {
-  constructor(joint) {
+  constructor(objectX, objectY) {
     //random() variables
     this.scale1 = random(-20, 20);
     this.scale2 = random(-50, 50);
 
     //rect() variables
-    this.rectX = joint.depthX * myCanvas.width + random(-50,50);
-    this.rectY = joint.depthY * myCanvas.height + random(-50,50);
+    this.rectX = objectX * myCanvas.width + random(-50,50);
+    this.rectY = objectY * myCanvas.height + random(-50,50);
+    //scale
     this.rectWidth1 = this.scale1;
     this.rectHeight1 = this.scale1;
     this.rectWidth2 = this.scale2;
     this.rectHeight2 = this.scale1;
   }
 
-  show(joint) {
+  show() {
     rectMode(CENTER);
     fill(100,100,100,60);
     rect(this.rectX, this.rectY, this.rectWidth1, this.rectHeight1);
